@@ -46,11 +46,6 @@ onMounted(refrescarInsignia)
         <span v-if="opcion.conInsignia && cantidadPendientes > 0" class="insignia">{{ cantidadPendientes }}</span>
       </RouterLink>
     </nav>
-
-    <footer class="pie-lateral">
-      <p>Administración de crédito</p>
-      <p>Guatemala · Quetzales (Q)</p>
-    </footer>
   </aside>
 </template>
 
@@ -75,8 +70,6 @@ onMounted(refrescarInsignia)
   border-radius: 6px; background: var(--color-navegacion-activa); font-size: 12px; font-weight: 500;
 }
 .menu a.activo .insignia { background: rgba(255, 255, 255, 0.12); }
-.pie-lateral { margin-top: auto; padding-top: 16px; border-top: 1px solid rgba(255, 255, 255, 0.15); font-size: 12px; color: rgba(255, 255, 255, 0.8); }
-.pie-lateral p + p { margin-top: 10px; }
 .barra-lateral-fondo { display: none; }
 
 @media (max-width: 900px) {

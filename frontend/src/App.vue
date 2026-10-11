@@ -29,19 +29,14 @@ watch(() => ruta.fullPath, () => {
         </Transition>
       </RouterView>
     </main>
-    <footer class="pie-institucional">
-      <span>CHN · Guatemala</span>
-    </footer>
   </div>
 </template>
 
 <style>
 .aplicacion { display: flex; flex-direction: column; min-height: 100vh; margin-left: var(--ancho-barra-lateral); }
 .area-trabajo { flex: 1; width: 100%; padding: 32px 32px 40px; }
-.pie-institucional { padding: 0 32px 28px; font-size: 12px; color: var(--color-texto-suave); }
 @media (max-width: 900px) {
   .aplicacion { margin-left: 0; }
   .area-trabajo { padding: 24px 16px 32px; }
-  .pie-institucional { padding: 0 16px 24px; }
 }
 </style>

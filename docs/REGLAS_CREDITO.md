@@ -1,6 +1,6 @@
 # Reglas de crédito, ciclo de facturación y mora
 
-Este documento amplía el contrato de [ARQUITECTURA.md](ARQUITECTURA.md). Donde los dos documentos no coincidan, manda este.
+Aquí están, con detalle, todas las reglas de negocio del sistema: qué se valida, cuándo y con qué mensaje responde. La visión general de cómo está armado el sistema está en [ARQUITECTURA.md](ARQUITECTURA.md).
 
 ## 1. Tipos de tarjeta
 

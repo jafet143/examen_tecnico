@@ -178,4 +178,4 @@ sistema-tarjetas-credito/
 | [Reglas de crédito](docs/REGLAS_CREDITO.md) | Especificación completa de las reglas de negocio |
 | [Diagrama entidad-relación](docs/diagrama-entidad-relacion.md) | Modelo de datos, cardinalidades y cascadas |
 | [Scripts de base de datos](database/) | `01_crear_base_datos.sql`, `02_crear_esquema.sql` y `03_datos_semilla.sql` |
-| [Arquitectura](docs/ARQUITECTURA.md) | Contrato técnico original del proyecto |
+| [Arquitectura](docs/ARQUITECTURA.md) | Cómo está armado el sistema y por qué |
