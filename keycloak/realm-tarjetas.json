@@ -1,0 +1,324 @@
+{
+  "realm": "tarjetas",
+  "displayName": "Gestión de Tarjetas de Crédito",
+  "enabled": true,
+  "sslRequired": "none",
+  "registrationAllowed": false,
+  "loginWithEmailAllowed": true,
+  "duplicateEmailsAllowed": false,
+  "resetPasswordAllowed": false,
+  "editUsernameAllowed": false,
+  "bruteForceProtected": true,
+  "accessTokenLifespan": 900,
+  "defaultLocale": "es",
+  "internationalizationEnabled": true,
+  "supportedLocales": [
+    "es",
+    "en"
+  ],
+  "roles": {
+    "realm": [
+      {
+        "name": "CLIENTES_CONSULTAR",
+        "description": "Ver clientes y su detalle",
+        "composite": false
+      },
+      {
+        "name": "CLIENTES_GESTIONAR",
+        "description": "Crear y editar clientes",
+        "composite": false
+      },
+      {
+        "name": "CLIENTES_ELIMINAR",
+        "description": "Eliminar clientes",
+        "composite": false
+      },
+      {
+        "name": "SOLICITUDES_CONSULTAR",
+        "description": "Ver solicitudes",
+        "composite": false
+      },
+      {
+        "name": "SOLICITUDES_REGISTRAR",
+        "description": "Crear solicitudes",
+        "composite": false
+      },
+      {
+        "name": "SOLICITUDES_DECIDIR",
+        "description": "Aprobar y rechazar solicitudes",
+        "composite": false
+      },
+      {
+        "name": "CUENTAS_CONSULTAR",
+        "description": "Ver cuentas, tarjetas, movimientos y el catálogo",
+        "composite": false
+      },
+      {
+        "name": "CONSUMOS_REGISTRAR",
+        "description": "Registrar consumos",
+        "composite": false
+      },
+      {
+        "name": "PAGOS_REGISTRAR",
+        "description": "Registrar pagos",
+        "composite": false
+      },
+      {
+        "name": "MOVIMIENTOS_REVERSAR",
+        "description": "Reversar consumos y pagos",
+        "composite": false
+      },
+      {
+        "name": "TARJETAS_BLOQUEAR",
+        "description": "Bloquear tarjetas",
+        "composite": false
+      },
+      {
+        "name": "TARJETAS_DESBLOQUEAR",
+        "description": "Desbloquear tarjetas (solo motivo SOLICITUD_CLIENTE)",
+        "composite": false
+      },
+      {
+        "name": "TARJETAS_REPONER",
+        "description": "Reponer tarjetas",
+        "composite": false
+      },
+      {
+        "name": "DATOS_SENSIBLES_VER",
+        "description": "Ver el número completo de cuenta y de tarjeta",
+        "composite": false
+      },
+      {
+        "name": "TARJETAS_RENOVAR",
+        "description": "Renovar tarjetas vencidas",
+        "composite": false
+      },
+      {
+        "name": "CUENTAS_CANCELAR",
+        "description": "Cancelar cuentas",
+        "composite": false
+      },
+      {
+        "name": "CARGOS_REGISTRAR",
+        "description": "Registrar intereses y recargos por mora",
+        "composite": false
+      },
+      {
+        "name": "CARGOS_AJUSTAR",
+        "description": "Devolución de intereses, exoneración de mora y reversión de comisiones",
+        "composite": false
+      },
+      {
+        "name": "ADMINISTRADOR",
+        "description": "Perfil Administrador: todos los permisos",
+        "composite": true,
+        "composites": {
+          "realm": [
+            "CLIENTES_CONSULTAR",
+            "CLIENTES_GESTIONAR",
+            "CLIENTES_ELIMINAR",
+            "SOLICITUDES_CONSULTAR",
+            "SOLICITUDES_REGISTRAR",
+            "SOLICITUDES_DECIDIR",
+            "CUENTAS_CONSULTAR",
+            "CONSUMOS_REGISTRAR",
+            "PAGOS_REGISTRAR",
+            "MOVIMIENTOS_REVERSAR",
+            "TARJETAS_BLOQUEAR",
+            "TARJETAS_DESBLOQUEAR",
+            "TARJETAS_REPONER",
+            "DATOS_SENSIBLES_VER",
+            "TARJETAS_RENOVAR",
+            "CUENTAS_CANCELAR",
+            "CARGOS_REGISTRAR",
+            "CARGOS_AJUSTAR"
+          ]
+        }
+      },
+      {
+        "name": "OPERADOR",
+        "description": "Perfil Operador de atención al cliente",
+        "composite": true,
+        "composites": {
+          "realm": [
+            "CLIENTES_CONSULTAR",
+            "CLIENTES_GESTIONAR",
+            "SOLICITUDES_CONSULTAR",
+            "SOLICITUDES_REGISTRAR",
+            "CUENTAS_CONSULTAR",
+            "CONSUMOS_REGISTRAR",
+            "TARJETAS_BLOQUEAR",
+            "TARJETAS_REPONER",
+            "TARJETAS_RENOVAR"
+          ]
+        }
+      },
+      {
+        "name": "CAJERO",
+        "description": "Perfil Cajero: consulta y registro de pagos",
+        "composite": true,
+        "composites": {
+          "realm": [
+            "CLIENTES_CONSULTAR",
+            "CUENTAS_CONSULTAR",
+            "PAGOS_REGISTRAR"
+          ]
+        }
+      },
+      {
+        "name": "ANALISTA_CREDITO",
+        "description": "Perfil Analista de crédito: consulta y decide solicitudes",
+        "composite": true,
+        "composites": {
+          "realm": [
+            "CLIENTES_CONSULTAR",
+            "SOLICITUDES_CONSULTAR",
+            "SOLICITUDES_DECIDIR",
+            "CUENTAS_CONSULTAR"
+          ]
+        }
+      }
+    ]
+  },
+  "clients": [
+    {
+      "clientId": "frontend-tarjetas",
+      "name": "Frontend Gestión de Tarjetas",
+      "description": "Aplicación web Vue (cliente público con Authorization Code + PKCE)",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": true,
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": true,
+      "implicitFlowEnabled": false,
+      "serviceAccountsEnabled": false,
+      "frontchannelLogout": true,
+      "fullScopeAllowed": true,
+      "rootUrl": "",
+      "baseUrl": "http://localhost:5173/",
+      "redirectUris": [
+        "http://localhost:5173/*",
+        "http://localhost:3000/*"
+      ],
+      "webOrigins": [
+        "http://localhost:5173",
+        "http://localhost:3000"
+      ],
+      "attributes": {
+        "pkce.code.challenge.method": "S256",
+        "post.logout.redirect.uris": "http://localhost:5173/*##http://localhost:3000/*"
+      },
+      "defaultClientScopes": [
+        "web-origins",
+        "acr",
+        "profile",
+        "roles",
+        "basic",
+        "email"
+      ],
+      "optionalClientScopes": [
+        "address",
+        "phone",
+        "offline_access",
+        "microprofile-jwt"
+      ]
+    }
+  ],
+  "users": [
+    {
+      "username": "admin",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "Administrador",
+      "lastName": "Sistema",
+      "email": "admin@tarjetas.example.com",
+      "requiredActions": [],
+      "credentials": [
+        {
+          "type": "password",
+          "value": "admin123",
+          "temporary": false
+        }
+      ],
+      "realmRoles": [
+        "ADMINISTRADOR"
+      ]
+    },
+    {
+      "username": "supervisor",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "Supervisora",
+      "lastName": "de Crédito",
+      "email": "supervisor@tarjetas.example.com",
+      "requiredActions": [],
+      "credentials": [
+        {
+          "type": "password",
+          "value": "supervisor123",
+          "temporary": false
+        }
+      ],
+      "realmRoles": [
+        "ADMINISTRADOR"
+      ]
+    },
+    {
+      "username": "operador",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "Operador",
+      "lastName": "Atención",
+      "email": "operador@tarjetas.example.com",
+      "requiredActions": [],
+      "credentials": [
+        {
+          "type": "password",
+          "value": "operador123",
+          "temporary": false
+        }
+      ],
+      "realmRoles": [
+        "OPERADOR"
+      ]
+    },
+    {
+      "username": "cajero",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "Cajero",
+      "lastName": "Agencia",
+      "email": "cajero@tarjetas.example.com",
+      "requiredActions": [],
+      "credentials": [
+        {
+          "type": "password",
+          "value": "cajero123",
+          "temporary": false
+        }
+      ],
+      "realmRoles": [
+        "CAJERO"
+      ]
+    },
+    {
+      "username": "analista",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "Analista",
+      "lastName": "de Crédito",
+      "email": "analista@tarjetas.example.com",
+      "requiredActions": [],
+      "credentials": [
+        {
+          "type": "password",
+          "value": "analista123",
+          "temporary": false
+        }
+      ],
+      "realmRoles": [
+        "ANALISTA_CREDITO"
+      ]
+    }
+  ]
+}

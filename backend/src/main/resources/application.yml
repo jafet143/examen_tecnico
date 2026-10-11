@@ -1,0 +1,32 @@
+server:
+  port: 8080
+spring:
+  application:
+    name: gestion-tarjetas-credito
+  datasource:
+    url: "${URL_BASE_DATOS:jdbc:sqlserver://localhost:1433;databaseName=GestionTarjetasCredito;encrypt=true;trustServerCertificate=true;sendStringParametersAsUnicode=false}"
+    username: ${USUARIO_BASE_DATOS:usuario_tarjetas}
+    password: ${CLAVE_BASE_DATOS:Aplicacion_Tarjetas2026}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+    show-sql: false
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+    time-zone: America/Guatemala
+seguridad:
+  keycloak:
+    issuer-esperado: ${KEYCLOAK_ISSUER_URI:http://localhost:8180/realms/tarjetas}
+    jwk-set-uri: ${KEYCLOAK_JWK_SET_URI:http://localhost:8180/realms/tarjetas/protocol/openid-connect/certs}
+  cors:
+    origenes-permitidos: ${CORS_ORIGENES_PERMITIDOS:http://localhost:5173,http://localhost:3000}
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html

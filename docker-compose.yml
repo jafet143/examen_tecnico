@@ -1,0 +1,103 @@
+name: sistema-tarjetas-credito
+
+services:
+  base-datos:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    platform: linux/amd64
+    container_name: tarjetas-base-datos
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_PID: Developer
+      MSSQL_SA_PASSWORD: ${MSSQL_SA_PASSWORD}
+      TZ: America/Guatemala
+    ports:
+      - "1433:1433"
+    volumes:
+      - datos-sql-server:/var/opt/mssql
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P \"$$MSSQL_SA_PASSWORD\" -C -b -Q \"SELECT 1\" -o /dev/null"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+      start_period: 30s
+
+  inicializador-base-datos:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    platform: linux/amd64
+    container_name: tarjetas-inicializador-base-datos
+    depends_on:
+      base-datos:
+        condition: service_healthy
+    environment:
+      SERVIDOR_BASE_DATOS: base-datos
+      MSSQL_SA_PASSWORD: ${MSSQL_SA_PASSWORD}
+      CLAVE_USUARIO_APLICACION: ${CLAVE_USUARIO_APLICACION}
+    volumes:
+      - ./database:/scripts:ro
+    entrypoint: ["/bin/bash", "/scripts/inicializar-base-datos.sh"]
+    restart: "no"
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:25.0.6
+    container_name: tarjetas-keycloak
+    command: ["start-dev", "--import-realm"]
+    environment:
+      KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN}
+      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
+      KC_HOSTNAME: http://localhost:8180
+      KC_HOSTNAME_BACKCHANNEL_DYNAMIC: "true"
+      KC_HTTP_ENABLED: "true"
+      KC_HEALTH_ENABLED: "true"
+    ports:
+      - "8180:8080"
+    volumes:
+      - ./keycloak/realm-tarjetas.json:/opt/keycloak/data/import/realm-tarjetas.json:ro
+    healthcheck:
+      test: ["CMD", "bash", "-c", "exec 3<>/dev/tcp/127.0.0.1/9000 && printf 'GET /health/ready HTTP/1.1\\r\\nHost: localhost\\r\\nConnection: close\\r\\n\\r\\n' >&3 && grep -q 'UP' <&3"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 40s
+
+  backend:
+    build: ./backend
+    container_name: tarjetas-backend
+    depends_on:
+      inicializador-base-datos:
+        condition: service_completed_successfully
+      keycloak:
+        condition: service_healthy
+    environment:
+      URL_BASE_DATOS: "jdbc:sqlserver://base-datos:1433;databaseName=GestionTarjetasCredito;encrypt=true;trustServerCertificate=true;sendStringParametersAsUnicode=false"
+      USUARIO_BASE_DATOS: usuario_tarjetas
+      CLAVE_BASE_DATOS: ${CLAVE_USUARIO_APLICACION}
+      KEYCLOAK_ISSUER_URI: http://localhost:8180/realms/tarjetas
+      KEYCLOAK_JWK_SET_URI: http://keycloak:8080/realms/tarjetas/protocol/openid-connect/certs
+      CORS_ORIGENES_PERMITIDOS: http://localhost:3000,http://localhost:5173
+      TZ: America/Guatemala
+    ports:
+      - "8080:8080"
+    healthcheck:
+      test: ["CMD", "curl", "-fs", "http://localhost:8080/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+      start_period: 40s
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        VITE_URL_API: http://localhost:8080/gestion-tarjetas
+        VITE_KEYCLOAK_URL: http://localhost:8180
+        VITE_KEYCLOAK_REALM: tarjetas
+        VITE_KEYCLOAK_CLIENTE_ID: frontend-tarjetas
+    container_name: tarjetas-frontend
+    depends_on:
+      backend:
+        condition: service_healthy
+    ports:
+      - "3000:80"
+
+volumes:
+  datos-sql-server:
