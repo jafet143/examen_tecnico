@@ -232,7 +232,7 @@ cliente 1───* solicitud_tarjeta 1───0..1 cuenta_credito 1───* 
 
 ### 9.5 Migración
 
-Es un cambio de esquema incompatible. Los scripts siguen siendo idempotentes para una BD **nueva**. El README y el [manual técnico](MANUAL_TECNICO.md#5-ejecución-con-docker-compose) indican que, si se tenía un volumen anterior, hay que ejecutar `docker compose down -v`. El evaluador clona el repositorio desde cero, así que no le afecta.
+Es un cambio de esquema incompatible. Los scripts siguen siendo idempotentes para una BD **nueva**. El README y el [manual técnico](Manual_Tecnico.pdf) (sección 5) indican que, si se tenía un volumen anterior, hay que ejecutar `docker compose down -v`. El evaluador clona el repositorio desde cero, así que no le afecta.
 
 ## 10. Requisitos para obtener una tarjeta
 

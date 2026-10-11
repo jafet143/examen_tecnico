@@ -20,7 +20,7 @@
 | **Base de Datos (BD)** | `database/**`, `keycloak/realm-tarjetas.json`, `docker-compose.yml`, `.env.example`, `.gitignore`, `.gitattributes`, `docs/diagrama-entidad-relacion.md` |
 | **Backend (BE)** | `backend/**` (incluye su `Dockerfile` y el Maven Wrapper) |
 | **Frontend (FE)** | `frontend/**` (incluye su `Dockerfile` y `nginx.conf`) |
-| **Orquestador** | `README.md`, `docs/ARQUITECTURA.md` (este archivo), `docs/MANUAL_TECNICO.md`, `docs/MANUAL_USUARIO.md` |
+| **Orquestador** | `README.md`, `docs/ARQUITECTURA.md` (este archivo), `docs/Manual_Tecnico.pdf`, `docs/Manual_Usuario.pdf` |
 
 Ningún agente edita archivos de otro.
 
@@ -37,8 +37,8 @@ sistema-tarjetas-credito/
 ├── README.md
 ├── docs/
 │   ├── ARQUITECTURA.md
-│   ├── MANUAL_TECNICO.md
-│   ├── MANUAL_USUARIO.md
+│   ├── Manual_Tecnico.pdf
+│   ├── Manual_Usuario.pdf
 │   └── diagrama-entidad-relacion.md    # Mermaid erDiagram
 ├── database/
 │   ├── inicializar-base-datos.sh       # lo ejecuta el contenedor inicializador

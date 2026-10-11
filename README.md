@@ -36,7 +36,7 @@ Requisitos: Docker Desktop 4.x (o Docker Engine con Compose v2), al menos 4 GB d
 1. Clonar el repositorio:
 
 ```bash
-git clone <url-del-repositorio> && cd sistema-tarjetas-credito
+git clone https://github.com/jafet143/examen_teorico.git && cd examen_teorico
 ```
 
 2. Crear el archivo de variables de entorno (valores de demostración):
@@ -57,7 +57,7 @@ docker compose up -d --build
 docker compose ps
 ```
 
-Si antes levantó una versión anterior del proyecto, ejecute `docker compose down -v` antes del paso 3. La ejecución local sin Docker, la configuración y la solución de problemas están en el [manual técnico](docs/MANUAL_TECNICO.md).
+Si antes levantó una versión anterior del proyecto, ejecute `docker compose down -v` antes del paso 3. La ejecución local sin Docker, la configuración y la solución de problemas están en el [manual técnico](docs/Manual_Tecnico.pdf).
 
 ## URLs y usuarios de demostración
 
@@ -76,7 +76,67 @@ Si antes levantó una versión anterior del proyecto, ejecute `docker compose do
 | `cajero` | `cajero123` | Cajero | Consultar clientes y cuentas y registrar pagos |
 | `analista` | `analista123` | Analista de crédito | Consultar y aprobar o rechazar solicitudes |
 
-La base de datos se crea con datos de demostración (7 clientes, 6 cuentas y casos de mora, tarjeta vencida, bloqueos y cuenta cancelada). El detalle y un recorrido sugerido están en el [manual técnico](docs/MANUAL_TECNICO.md#22-datos-de-demostración-y-recorrido-sugerido).
+La base de datos se crea con datos de demostración (7 clientes, 6 cuentas y casos de mora, tarjeta vencida, bloqueos y cuenta cancelada). El detalle y un recorrido sugerido están en el [manual técnico](docs/Manual_Tecnico.pdf) (sección 22).
+
+## Requisitos del enunciado
+
+| Requisito | Cómo se cumple |
+|---|---|
+| Gestión de clientes: agregar, listar, editar y eliminar (nombre, apellido, identificación, fecha de nacimiento, dirección, correo y teléfono) | Pantalla **Clientes** y `/gestion-tarjetas/clientes`. Cada cliente recibe un código de 8 dígitos. No se elimina un cliente con cuentas activas (CL-01). |
+| Solicitud de tarjeta con cliente, tipo, fecha e ingreso mensual; estado inicial *Pendiente* | Pantalla **Nueva solicitud**; valida ingreso mínimo, estabilidad laboral y mora antes de registrar. |
+| Aprobar con fecha, monto y comentario; rechazar con fecha y motivo | Pantalla **Revisión de solicitud** (perfil Analista de crédito o Administrador). |
+| Al aprobar se crea automáticamente la tarjeta | En la misma transacción se abre la cuenta de crédito y su primera tarjeta. |
+| Número de tarjeta único generado por el sistema | 16 dígitos con dígito verificador Luhn; el número de cuenta es el de la primera tarjeta. |
+| Límite igual al monto aprobado y saldo inicial en cero | Se guardan en la cuenta de crédito. |
+| Consultar las tarjetas emitidas a un cliente (número, tipo, límite y saldo) | Detalle del cliente y pantalla **Tarjetas emitidas**. |
+| Registrar consumos y pagos (monto, fecha y descripción); los consumos suman y los pagos restan al saldo | Detalle de la cuenta, con bloqueo pesimista para evitar saldos inconsistentes. |
+| Un consumo no puede superar el límite de crédito | Se rechaza con el mensaje del disponible actual. |
+| Consultar consumos y pagos | Historial de movimientos de la cuenta, con los reversos visibles. |
+| Java y T-SQL | Spring Boot 3.3 (Java 17) y SQL Server 2022 con scripts en [`database/`](database/). |
+| Entregables: código, documentación técnica, script de BD, diagrama E/R y README | Este repositorio, los manuales en PDF, los scripts T-SQL y el [diagrama entidad-relación](docs/diagrama-entidad-relacion.md). |
+| Valor agregado: Docker Compose | `docker compose up -d --build` levanta base de datos, Keycloak, backend y frontend. |
+
+La matriz completa, con criterios de aceptación y evidencia por requisito, está en [docs/REQUISITOS.md](docs/REQUISITOS.md).
+
+## Reglas de negocio
+
+Toda violación de una regla responde **HTTP 422** con un mensaje en español. La especificación completa está en [docs/REGLAS_CREDITO.md](docs/REGLAS_CREDITO.md).
+
+### Solicitud y aprobación
+
+| Regla | Descripción |
+|---|---|
+| RC-01 | Ingreso mensual mínimo por tipo: Clásica Q 3,000 · Oro Q 8,000 · Platino Q 15,000 · Black Q 30,000. |
+| RC-02 / RC-04 | El cliente no puede tener cuentas en mora; se valida al solicitar y otra vez al aprobar. |
+| RC-03 | El monto aprobado no puede superar el 150 % del ingreso mensual declarado. |
+| RC-06 | Se requieren al menos 12 meses de estabilidad laboral. |
+| RC-07 | Solo una cuenta activa por tipo de tarjeta; si perdió la tarjeta corresponde una reposición. |
+
+### Ciclo de facturación, pago mínimo, intereses y mora
+
+| Regla | Descripción |
+|---|---|
+| Corte y pago | Corte el día 5 de cada mes; fecha límite de pago el día 25. |
+| Pago mínimo | 10 % del saldo al corte. El pago de contado cubre el saldo al corte completo. |
+| Mora | Si al día 25 no se cubrió el pago mínimo, la cuenta entra en mora y no acepta consumos (RC-05). |
+| Interés | El día 26 se cobra automáticamente un 5 % mensual sobre lo no pagado del corte; el proceso es idempotente (un interés por ciclo). |
+| Ajustes | Recargo por mora, devolución de intereses, exoneración de mora y reversión de comisión, con motivo y usuario. |
+
+### Tarjetas
+
+| Regla | Descripción |
+|---|---|
+| RB-01 a RB-05 | Solo se bloquea una tarjeta activa; la tarjeta bloqueada no acepta consumos pero sí pagos. Por robo, extravío o sospecha de fraude **no se desbloquea**: solo se repone. |
+| RR-01 a RR-05 | La reposición genera un número nuevo en la **misma cuenta** (mismo límite, saldo y movimientos); la anterior queda *Reemplazada*. Extravío cobra Q 45; robo exige denuncia y deterioro exige presentar la tarjeta. La mora no impide reponer. |
+| RNV-01 a RNV-04 | Una tarjeta vencida no acepta consumos y se renueva sin costo, con vencimiento a 5 años. |
+
+### Reversos, cancelación y clientes
+
+| Regla | Descripción |
+|---|---|
+| RV-01 a RV-05 | Un movimiento se reversa una sola vez, con motivo; no se borra, deja de contar en los cálculos. No se permite si el saldo quedaría negativo o superaría el límite. |
+| CA-01 a CA-05 | Solo se cancela una cuenta activa, al día y con saldo Q 0.00. Se conserva todo el historial y el cliente queda activo sin producto. |
+| CL-01 | No se puede eliminar un cliente con cuentas activas; primero deben cancelarse. |
 
 ## Arquitectura en breve
 
@@ -85,7 +145,7 @@ La base de datos se crea con datos de demostración (7 clientes, 6 cuentas y cas
 - **Base de datos:** SQL Server 2022, creada por scripts T-SQL idempotentes que ejecuta un contenedor inicializador.
 - **Identidad:** Keycloak con el realm `tarjetas`, 18 permisos agrupados en 4 perfiles y 5 usuarios de demostración.
 
-Diagrama y detalle en el [manual técnico](docs/MANUAL_TECNICO.md#2-arquitectura).
+Diagrama y detalle en el [manual técnico](docs/Manual_Tecnico.pdf) (sección 2).
 
 ## Pruebas
 
@@ -108,16 +168,15 @@ sistema-tarjetas-credito/
 │   └── src/                 # Vistas, componentes, servicios y rutas
 ├── database/                # Scripts T-SQL: base de datos, esquema y datos semilla
 ├── keycloak/                # Realm con permisos, perfiles y usuarios de demostración
-└── docs/                    # Manuales, reglas de negocio, diagrama ER y trazabilidad
-    └── imagenes/            # Capturas del manual de usuario
+└── docs/                    # Manuales en PDF, reglas de negocio, requisitos y diagrama ER
 ```
 
 ## Documentación
 
 | Documento | Contenido |
 |---|---|
-| [Manual técnico](docs/MANUAL_TECNICO.md) | Arquitectura, instalación con y sin Docker, configuración, Keycloak, permisos, API REST, base de datos, pruebas, decisiones de diseño y solución de problemas |
-| [Manual de usuario](docs/MANUAL_USUARIO.md) | Uso de la aplicación paso a paso para el personal del banco, con capturas |
+| [Manual técnico (PDF)](docs/Manual_Tecnico.pdf) | Arquitectura, instalación con y sin Docker, configuración, Keycloak, permisos, API REST, base de datos, pruebas, decisiones de diseño y solución de problemas |
+| [Manual de usuario (PDF)](docs/Manual_Usuario.pdf) | Uso de la aplicación paso a paso para el personal del banco, con capturas |
 | [Reglas de crédito](docs/REGLAS_CREDITO.md) | Especificación completa de las reglas de negocio |
 | [Diagrama entidad-relación](docs/diagrama-entidad-relacion.md) | Modelo de datos, cardinalidades y cascadas |
 | [Scripts de base de datos](database/) | `01_crear_base_datos.sql`, `02_crear_esquema.sql` y `03_datos_semilla.sql` |
