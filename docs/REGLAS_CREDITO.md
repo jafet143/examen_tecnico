@@ -273,6 +273,7 @@ Motivos de reposición (enum `MotivoReposicion`): `ROBO` (Robo), `EXTRAVIO` (Ext
 | RR-03 | La tarjeta anterior pasa a `REEMPLAZADA` con `motivo_reposicion`, fecha y usuario. Conserva su información de bloqueo como historial. | |
 | RR-04 | La tarjeta nueva queda `ACTIVA`, en la **misma cuenta**: mismo número de cuenta, límite, saldo, ciclo, mora y movimientos. Tiene número nuevo único, nuevas fechas de emisión y vencimiento, e `id_tarjeta_anterior` apunta a la reemplazada. | |
 | RR-05 | La mora **no impide** una reposición. | |
+| RR-06 | Si la tarjeta ya está bloqueada por ROBO, EXTRAVIO o SOSPECHA_FRAUDE, la reposición **toma ese mismo motivo**: la interfaz lo muestra fijo y no pregunta, y el servidor rechaza otro motivo. Si el bloqueo es por SOLICITUD_CLIENTE, se elige el motivo libremente. | `La tarjeta está bloqueada por {motivo}; la reposición debe registrarse con ese mismo motivo` |
 
 - Una tarjeta `REEMPLAZADA` no se puede bloquear, desbloquear, reponer ni usar para consumos. Responde 422 con el mensaje de RR-01.
 - Desbloquear sigue prohibido para ROBO y EXTRAVIO (RB-04). El camino correcto en esos casos es la reposición.

@@ -8,8 +8,8 @@ import IconoSistema from './IconoSistema.vue'
 import { reponerTarjeta } from '../servicios/tarjetasServicio'
 import { usarCatalogoTiposTarjeta } from '../composables/usarCatalogoTiposTarjeta'
 import { obtenerMensajeError, obtenerErroresDeCampos } from '../utilidades/errores'
-import { formatearMoneda, formatearNumeroEnmascarado, obtenerUltimosCuatroDigitos } from '../utilidades/formatos'
-import { MOTIVO_REPOSICION_ROBO, MOTIVO_REPOSICION_EXTRAVIO, MOTIVO_REPOSICION_DETERIORO, MOTIVO_REPOSICION_RENOVACION } from '../utilidades/constantes'
+import { formatearMoneda, formatearFecha, formatearNumeroEnmascarado, obtenerUltimosCuatroDigitos } from '../utilidades/formatos'
+import { MOTIVO_REPOSICION_ROBO, MOTIVO_REPOSICION_EXTRAVIO, MOTIVO_REPOSICION_DETERIORO, MOTIVO_REPOSICION_RENOVACION, ESTADO_TARJETA_BLOQUEADA } from '../utilidades/constantes'
 
 const props = defineProps({
   visible: { type: Boolean, default: false },
@@ -17,9 +17,24 @@ const props = defineProps({
 })
 const emit = defineEmits(['cerrar', 'repuesta'])
 
-const { motivosReposicion, comisionReposicionExtravio } = usarCatalogoTiposTarjeta()
+const { motivosReposicion, motivosBloqueo, comisionReposicionExtravio } = usarCatalogoTiposTarjeta()
 
 const motivosDisponibles = computed(() => motivosReposicion.value.filter((motivo) => motivo.codigo !== MOTIVO_REPOSICION_RENOVACION))
+
+const motivoTomadoDelBloqueo = computed(() => {
+  if (props.tarjeta.estadoTarjeta !== ESTADO_TARJETA_BLOQUEADA) return null
+  const bloqueo = motivosBloqueo.value.find((motivo) => motivo.codigo === props.tarjeta.motivoBloqueo)
+  if (!bloqueo || bloqueo.permiteDesbloqueo) return null
+  return motivosDisponibles.value.find((motivo) => motivo.codigo === props.tarjeta.motivoBloqueo) ?? null
+})
+const detalleBloqueo = computed(() =>
+  [
+    props.tarjeta.fechaBloqueo && `el ${formatearFecha(props.tarjeta.fechaBloqueo)}`,
+    props.tarjeta.usuarioBloqueo && `por ${props.tarjeta.usuarioBloqueo}`
+  ]
+    .filter(Boolean)
+    .join(' ')
+)
 
 const formulario = reactive({ motivoReposicion: '', comentario: '', requisitoPresentado: false })
 const erroresCampos = ref({})
@@ -45,7 +60,7 @@ watch(
   () => props.visible,
   (esVisible) => {
     if (!esVisible) return
-    Object.assign(formulario, { motivoReposicion: '', comentario: '', requisitoPresentado: false })
+    Object.assign(formulario, { motivoReposicion: motivoTomadoDelBloqueo.value?.codigo ?? '', comentario: '', requisitoPresentado: false })
     erroresCampos.value = {}
     mensajeError.value = ''
   }
@@ -87,7 +102,18 @@ async function confirmarReposicion() {
       <div class="modal-cuerpo">
         <MensajeAlerta :mensaje="mensajeError" tipo="error" @cerrar="mensajeError = ''" />
 
-        <fieldset class="grupo-opciones" :class="{ 'con-error': erroresCampos.motivoReposicion }">
+        <div v-if="motivoTomadoDelBloqueo" class="motivo-desde-bloqueo">
+          <span class="motivo-desde-bloqueo-etiqueta">Motivo de la reposición</span>
+          <div class="motivo-desde-bloqueo-valor">
+            <IconoSistema nombre="candado" :tamano="18" />
+            <div>
+              <strong>{{ motivoTomadoDelBloqueo.descripcion }}</strong>
+              <p>Tomado del bloqueo registrado{{ detalleBloqueo ? ` ${detalleBloqueo}` : '' }}.</p>
+            </div>
+          </div>
+        </div>
+
+        <fieldset v-else class="grupo-opciones" :class="{ 'con-error': erroresCampos.motivoReposicion }">
           <legend>Motivo de la reposición *</legend>
           <div class="opciones-tarjeta">
             <label v-for="motivo in motivosDisponibles" :key="motivo.codigo" class="opcion-tarjeta" :class="{ seleccionada: formulario.motivoReposicion === motivo.codigo }">
@@ -124,3 +150,11 @@ async function confirmarReposicion() {
     </form>
   </VentanaModal>
 </template>
+
+<style scoped>
+.motivo-desde-bloqueo { display: flex; flex-direction: column; gap: 8px; }
+.motivo-desde-bloqueo-etiqueta { font-size: 13px; font-weight: 600; color: var(--color-texto); }
+.motivo-desde-bloqueo-valor { display: flex; align-items: flex-start; gap: 10px; padding: 12px 14px; border: 1px solid var(--color-primario); border-radius: var(--radio); background: var(--color-primario-suave); color: var(--color-primario); }
+.motivo-desde-bloqueo-valor strong { font-size: 14px; }
+.motivo-desde-bloqueo-valor p { margin: 2px 0 0; font-size: 13px; color: var(--color-texto-suave); }
+</style>

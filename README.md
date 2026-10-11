@@ -125,7 +125,7 @@ Toda violación de una regla responde **HTTP 422** con un mensaje en español. L
 | Regla | Descripción |
 |---|---|
 | RB-01 a RB-05 | Solo se bloquea una tarjeta activa; la tarjeta bloqueada no acepta consumos pero sí pagos. Por robo, extravío o sospecha de fraude **no se desbloquea**: solo se repone. |
-| RR-01 a RR-05 | La reposición genera un número nuevo en la **misma cuenta** (mismo límite, saldo y movimientos); la anterior queda *Reemplazada*. Extravío cobra Q 45; robo exige denuncia y deterioro exige presentar la tarjeta. La mora no impide reponer. |
+| RR-01 a RR-06 | La reposición genera un número nuevo en la **misma cuenta** (mismo límite, saldo y movimientos); la anterior queda *Reemplazada*. Extravío cobra Q 45; robo exige denuncia y deterioro exige presentar la tarjeta. La mora no impide reponer. Si la tarjeta ya está bloqueada por robo, extravío o fraude, la reposición toma ese mismo motivo. |
 | RNV-01 a RNV-04 | Una tarjeta vencida no acepta consumos y se renueva sin costo, con vencimiento a 5 años. |
 
 ### Reversos, cancelación y clientes

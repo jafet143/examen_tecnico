@@ -119,6 +119,7 @@ public class TarjetaService {
         validarNoReemplazada(actual);
         CuentaCredito cuenta = actual.getCuenta();
         ReglasCuenta.exigirActiva(cuenta);
+        validarMotivoSegunBloqueo(actual, motivo);
         validarRequisitosReposicion(peticion);
         procesoIntereses.generarInteresesPendientes(cuenta);
         String comentario = normalizarComentario(peticion.comentario());
@@ -137,6 +138,18 @@ public class TarjetaService {
             actual.setIdCargoReposicion(comision.getId());
         }
         return TarjetaMapper.aRespuesta(nueva, incluirDatosSensibles, LocalDate.now(reloj));
+    }
+
+    private void validarMotivoSegunBloqueo(TarjetaCredito tarjeta, MotivoReposicion motivo) {
+        if (!tarjeta.estaBloqueada()) {
+            return;
+        }
+        MotivoBloqueo motivoBloqueo = tarjeta.getMotivoBloqueo();
+        if (motivoBloqueo.permiteDesbloqueo() || motivo.getMotivoBloqueoPrevio() == motivoBloqueo) {
+            return;
+        }
+        throw new ReglaNegocioException("La tarjeta está bloqueada por " + motivoBloqueo.getDescripcion()
+                + "; la reposición debe registrarse con ese mismo motivo");
     }
 
     @Transactional

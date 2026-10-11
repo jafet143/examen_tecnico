@@ -244,6 +244,33 @@ class TarjetaServiceTest {
     }
 
     @Test
+    @DisplayName("RR-06: una tarjeta bloqueada por robo se repone con el mismo motivo y conserva su bloqueo")
+    void reponerTarjetaBloqueadaPorRoboConElMismoMotivo() {
+        tarjeta.bloquear(MotivoBloqueo.ROBO, "Reportada por el cliente", LocalDateTime.of(2026, 10, 8, 9, 0), "admin");
+
+        tarjetaService.reponer(5L, reposicion(MotivoReposicion.ROBO, true, false), "operador", false);
+
+        assertEquals(EstadoTarjeta.REEMPLAZADA, tarjeta.getEstadoTarjeta());
+        assertEquals(MotivoReposicion.ROBO, tarjeta.getMotivoReposicion());
+        assertEquals("admin", tarjeta.getUsuarioBloqueo());
+    }
+
+    @Test
+    @DisplayName("RR-06: una tarjeta bloqueada por extravío no se puede reponer con otro motivo")
+    void reponerTarjetaBloqueadaPorExtravioConOtroMotivo() {
+        tarjeta.bloquear(MotivoBloqueo.EXTRAVIO, null, LocalDateTime.of(2026, 10, 8, 9, 0), "admin");
+
+        ReglaNegocioException excepcion = assertThrows(ReglaNegocioException.class, () -> tarjetaService.reponer(
+                5L, reposicion(MotivoReposicion.DETERIORO, false, true), "operador", false));
+
+        assertEquals("La tarjeta está bloqueada por Extravío; la reposición debe registrarse con ese mismo motivo",
+                excepcion.getMessage());
+        assertEquals(EstadoTarjeta.BLOQUEADA, tarjeta.getEstadoTarjeta());
+        verify(tarjetaCreditoRepository, never()).save(any());
+        verifyNoInteractions(cargoService);
+    }
+
+    @Test
     @DisplayName("Reponer una tarjeta ya bloqueada conserva su bloqueo original")
     void reponerTarjetaBloqueadaConservaElBloqueo() {
         tarjeta.bloquear(MotivoBloqueo.SOLICITUD_CLIENTE, "Pedido por la clienta",
