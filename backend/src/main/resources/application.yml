@@ -4,7 +4,7 @@ spring:
   application:
     name: gestion-tarjetas-credito
   datasource:
-    url: "${URL_BASE_DATOS:jdbc:sqlserver://localhost:1433;databaseName=GestionTarjetasCredito;encrypt=true;trustServerCertificate=true;sendStringParametersAsUnicode=false}"
+    url: "${URL_BASE_DATOS:jdbc:sqlserver://localhost:14330;databaseName=GestionTarjetasCredito;encrypt=true;trustServerCertificate=true;sendStringParametersAsUnicode=false}"
     username: ${USUARIO_BASE_DATOS:usuario_tarjetas}
     password: ${CLAVE_BASE_DATOS:Aplicacion_Tarjetas2026}
   jpa:

@@ -11,7 +11,7 @@ El sistema tiene cuatro piezas que corren cada una en su propio contenedor:
 | Frontend | Vue 3 + Vite, servido por nginx (puerto 3000) | La aplicación web que usa el personal del banco |
 | Backend | Spring Boot 3.3 con Java 17 (puerto 8080) | La API REST con todas las reglas de negocio |
 | Identidad | Keycloak 25 (puerto 8180) | Inicio de sesión, usuarios, perfiles y permisos |
-| Base de datos | SQL Server 2022 (puerto 1433) | Guarda clientes, solicitudes, cuentas, tarjetas y movimientos |
+| Base de datos | SQL Server 2022 (puerto 14330 en la máquina; 1433 dentro de Docker) | Guarda clientes, solicitudes, cuentas, tarjetas y movimientos |
 
 El recorrido de una petición es sencillo. El usuario abre la aplicación y, si no tiene sesión, el frontend lo manda a Keycloak para que inicie sesión. Keycloak le devuelve un token JWT con sus permisos, y el frontend envía ese token en cada llamada a la API. El backend revisa la firma del token, comprueba que el usuario tenga el permiso que pide la operación, aplica las reglas y guarda en la base de datos.
 

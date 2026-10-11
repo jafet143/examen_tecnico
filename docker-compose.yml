@@ -11,7 +11,7 @@ services:
       MSSQL_SA_PASSWORD: ${MSSQL_SA_PASSWORD}
       TZ: America/Guatemala
     ports:
-      - "1433:1433"
+      - "14330:1433"
     volumes:
       - datos-sql-server:/var/opt/mssql
     healthcheck:

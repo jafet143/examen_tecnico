@@ -31,33 +31,55 @@ Desarrollada como examen técnico para la plaza de Analista Programador de **Cr�
 
 ## Inicio rápido con Docker
 
-Requisitos: Docker Desktop 4.x (o Docker Engine con Compose v2), al menos 4 GB de RAM para Docker y los puertos `3000`, `8080`, `8180` y `1433` libres. En Mac con Apple Silicon active la emulación con Rosetta en Docker Desktop.
+Requisitos:
 
-1. Clonar el repositorio:
+- Docker Desktop 4.x. En Windows, con el motor **WSL 2** activado (es la opción por defecto); en Mac con Apple Silicon, con la emulación de Rosetta activada.
+- Al menos 4 GB de RAM asignados a Docker.
+- Los puertos `3000`, `8080`, `8180` y `14330` libres. SQL Server se publica en el `14330`, y no en el `1433` habitual, para no chocar con un SQL Server instalado en la máquina.
+
+Los comandos funcionan igual en PowerShell, CMD, Git Bash y en la terminal de Mac o Linux, salvo el paso 2 en CMD.
+
+1. Clonar el repositorio y entrar a la carpeta:
 
 ```bash
-git clone https://github.com/jafet143/examen_teorico.git && cd examen_teorico
+git clone https://github.com/jafet143/examen_teorico.git
 ```
 
-2. Crear el archivo de variables de entorno (valores de demostración):
+```bash
+cd examen_teorico
+```
+
+2. Crear el archivo de variables de entorno con los valores de demostración. En PowerShell, Git Bash, Mac o Linux:
 
 ```bash
 cp .env.example .env
 ```
 
-3. Construir y levantar todo el stack (el primer arranque tarda de 3 a 6 minutos):
+En CMD (Símbolo del sistema de Windows):
+
+```bat
+copy .env.example .env
+```
+
+3. Construir y levantar todo el sistema. La primera vez tarda de 3 a 6 minutos, porque descarga las imágenes y compila el backend y el frontend:
 
 ```bash
 docker compose up -d --build
 ```
 
-4. Verificar que `backend` y `frontend` estén en ejecución:
+4. Verificar que todo esté en ejecución. `base-datos`, `keycloak` y `backend` deben aparecer como *healthy*, `frontend` como *running* e `inicializador-base-datos` como *exited (0)*, porque solo corre una vez para crear la base:
 
 ```bash
 docker compose ps
 ```
 
-Si antes levantó una versión anterior del proyecto, ejecute `docker compose down -v` antes del paso 3. La ejecución local sin Docker, la configuración y la solución de problemas están en el [manual técnico](docs/Manual_Tecnico.pdf).
+Luego abra http://localhost:3000 e ingrese con alguno de los usuarios de la tabla siguiente.
+
+**Si algo falla:**
+
+- *"port is already allocated"*: otro programa usa uno de los puertos. En Windows se identifica con `netstat -ano | findstr :8080` (cambiando el puerto) y en Mac o Linux con `lsof -i :8080`.
+- Si antes levantó una versión anterior del proyecto, ejecute `docker compose down -v` antes del paso 3 para empezar con una base limpia.
+- La ejecución sin Docker, la configuración y más casos de solución de problemas están en el [manual técnico](docs/Manual_Tecnico.pdf).
 
 ## URLs y usuarios de demostración
 
@@ -67,6 +89,7 @@ Si antes levantó una versión anterior del proyecto, ejecute `docker compose do
 | API REST | http://localhost:8080/gestion-tarjetas |
 | Swagger UI | http://localhost:8080/swagger-ui.html |
 | Consola de Keycloak | http://localhost:8180 (usuario `admin`, contraseña `admin`) |
+| SQL Server | `localhost,14330` (usuario `sa`, contraseña en `.env`) |
 
 | Usuario | Contraseña | Perfil | Qué puede hacer |
 |---|---|---|---|
