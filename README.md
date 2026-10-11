@@ -2,7 +2,7 @@
 
 Aplicación web para administrar el ciclo de vida de las tarjetas de crédito de un banco. Cubre desde el registro del cliente y la solicitud de la tarjeta, evaluada con reglas de crédito (ingreso mínimo, estabilidad laboral, mora y una cuenta activa por tipo), hasta la operación diaria de la **cuenta de crédito**: consumos y pagos, ciclo de facturación con pago mínimo del 10 %, mora, interés automático del 5 % mensual, bloqueo, reposición y renovación de tarjetas, cargos y sus ajustes, reversos y cancelación de cuentas. El acceso se controla con 18 permisos agrupados en cuatro perfiles (Administrador, Operador de atención, Cajero y Analista de crédito).
 
-Desarrollada como examen técnico para la plaza de Analista Programador de **Crédito Hipotecario Nacional de Guatemala (CHN)**.
+Desarrollada como examen técnico para la plaza de Analista Programador de **Crédito Hipotecario Nacional (CHN)**.
 
 ## Funcionalidades principales
 
