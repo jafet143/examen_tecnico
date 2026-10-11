@@ -96,8 +96,6 @@ La base de datos se crea con datos de demostración (7 clientes, 6 cuentas y cas
 | Entregables: código, documentación técnica, script de BD, diagrama E/R y README | Este repositorio, los manuales en PDF, los scripts T-SQL y el [diagrama entidad-relación](docs/diagrama-entidad-relacion.md). |
 | Valor agregado: Docker Compose | `docker compose up -d --build` levanta base de datos, Keycloak, backend y frontend. |
 
-La matriz completa, con criterios de aceptación y evidencia por requisito, está en [docs/REQUISITOS.md](docs/REQUISITOS.md).
-
 ## Reglas de negocio
 
 Toda violación de una regla responde **HTTP 422** con un mensaje en español. La especificación completa está en [docs/REGLAS_CREDITO.md](docs/REGLAS_CREDITO.md).
@@ -180,5 +178,4 @@ sistema-tarjetas-credito/
 | [Reglas de crédito](docs/REGLAS_CREDITO.md) | Especificación completa de las reglas de negocio |
 | [Diagrama entidad-relación](docs/diagrama-entidad-relacion.md) | Modelo de datos, cardinalidades y cascadas |
 | [Scripts de base de datos](database/) | `01_crear_base_datos.sql`, `02_crear_esquema.sql` y `03_datos_semilla.sql` |
-| [Requisitos](docs/REQUISITOS.md) | Matriz de trazabilidad de requisitos con evidencia |
 | [Arquitectura](docs/ARQUITECTURA.md) | Contrato técnico original del proyecto |
