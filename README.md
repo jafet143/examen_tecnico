@@ -42,11 +42,11 @@ Los comandos funcionan igual en PowerShell, CMD, Git Bash y en la terminal de Ma
 1. Clonar el repositorio y entrar a la carpeta:
 
 ```bash
-git clone https://github.com/jafet143/examen_teorico.git
+git clone https://github.com/jafet143/examen_tecnico.git
 ```
 
 ```bash
-cd examen_teorico
+cd examen_tecnico
 ```
 
 2. Crear el archivo de variables de entorno con los valores de demostración. En PowerShell, Git Bash, Mac o Linux:
